@@ -23,9 +23,9 @@ jobs:
           php-version: '8.2'
           extensions: mbstring, pdo, pdo_mysql, xml, bcmath
 
-      #  3. Installer les dépendances Composer
+     # 3. Installer les dépendances Composer
       - name: Install dependencies
-        run: composer install --no-interaction --prefer-dist --optimize-autoloader
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader --no-scripts
 
       #  4. Copier le .env
       - name: Copy .env
