@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -19,19 +18,19 @@ use Laravel\Sanctum\HasApiTokens;
  * @property string|null $num_compteur
  * @property string|null $type_abonement
  * @property string $mdp
- *
- * @package App\Models
  */
-
 class Abonne extends Authenticatable
 {
     use HasApiTokens, Notifiable;
     use HasFactory;
 
-    protected $table      = 'Abonne';
+    protected $table = 'Abonne';
+
     protected $primaryKey = 'id';
-    public $incrementing  = true;
-    public $timestamps    = false;
+
+    public $incrementing = true;
+
+    public $timestamps = false;
 
     protected $fillable = [
         'nom',

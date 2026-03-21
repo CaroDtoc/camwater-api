@@ -19,9 +19,9 @@ class FactureTest extends TestCase
     private function getAuthToken(string $type = 'dommestique'): array
     {
         $abonne = Abonne::factory()->create([
-            'num_compteur'   => Str::random(5),
+            'num_compteur' => Str::random(5),
             'type_abonement' => $type,
-            'mdp'            => Hash::make('password123'),
+            'mdp' => Hash::make('password123'),
         ]);
 
         $token = $abonne->createToken('auth_token')->plainTextToken;
@@ -37,13 +37,13 @@ class FactureTest extends TestCase
         $auth = $this->getAuthToken();
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $auth['token'],
+            'Authorization' => 'Bearer '.$auth['token'],
         ])->getJson('/api/factures');
 
         $response->assertStatus(200)
-                 ->assertJsonStructure([
-                     'data'
-                 ]);
+            ->assertJsonStructure([
+                'data',
+            ]);
     }
 
     /**
@@ -54,29 +54,29 @@ class FactureTest extends TestCase
         $auth = $this->getAuthToken();
 
         $facture = Facture::create([
-            'id'            => $auth['abonne']->id,
-            'conso'         => 15,
+            'id' => $auth['abonne']->id,
+            'conso' => 15,
             'montant_total' => 6250,
             'date_emission' => '2026-01-15',
-            'statut'        => 'Non payé',
+            'statut' => 'Non payé',
         ]);
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $auth['token'],
+            'Authorization' => 'Bearer '.$auth['token'],
         ])->getJson("/api/factures/{$facture->idf}");
 
         $response->assertStatus(200)
-                 ->assertJsonStructure([
-                     'data' => [
-                         'idf',
-                         'abonne',
-                         'type_abonement',
-                         'conso',
-                         'montant_total',
-                         'date_emission',
-                         'statut',
-                     ]
-                 ]);
+            ->assertJsonStructure([
+                'data' => [
+                    'idf',
+                    'abonne',
+                    'type_abonement',
+                    'conso',
+                    'montant_total',
+                    'date_emission',
+                    'statut',
+                ],
+            ]);
     }
 
     /**
@@ -87,32 +87,32 @@ class FactureTest extends TestCase
         $auth = $this->getAuthToken();
 
         Facture::create([
-            'id'            => $auth['abonne']->id,
-            'conso'         => 10,
+            'id' => $auth['abonne']->id,
+            'conso' => 10,
             'montant_total' => 3500,
             'date_emission' => '2026-01-15',
-            'statut'        => 'Payé',
+            'statut' => 'Payé',
         ]);
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $auth['token'],
+            'Authorization' => 'Bearer '.$auth['token'],
         ])->getJson("/api/factures/abonne/{$auth['abonne']->id}");
 
         $response->assertStatus(200)
-                 ->assertJsonStructure([
-                     'data' => [
-                         'abonne',
-                         'factures' => [
-                             '*' => [
-                                 'idf',
-                                 'conso',
-                                 'montant_total',
-                                 'date_emission',
-                                 'statut',
-                             ]
-                         ]
-                     ]
-                 ]);
+            ->assertJsonStructure([
+                'data' => [
+                    'abonne',
+                    'factures' => [
+                        '*' => [
+                            'idf',
+                            'conso',
+                            'montant_total',
+                            'date_emission',
+                            'statut',
+                        ],
+                    ],
+                ],
+            ]);
     }
 
     /**
@@ -123,30 +123,30 @@ class FactureTest extends TestCase
         $auth = $this->getAuthToken('dommestique');
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $auth['token'],
+            'Authorization' => 'Bearer '.$auth['token'],
         ])->postJson('/api/factures/calculer', [
-            'id'    => $auth['abonne']->id,
+            'id' => $auth['abonne']->id,
             'conso' => 25,
         ]);
 
         $response->assertStatus(201)
-                 ->assertJsonStructure([
-                     'message',
-                     'data' => [
-                         'idf',
-                         'abonne',
-                         'type_abonement',
-                         'conso',
-                         'detail',
-                         'montant_total',
-                         'date_emission',
-                         'statut',
-                     ]
-                 ])
-                 ->assertJsonFragment([
-                     'montant_total' => '12900 FCFA', // 10x350 + 10x550 + 5x780
-                     'statut'        => 'Non payé',
-                 ]);
+            ->assertJsonStructure([
+                'message',
+                'data' => [
+                    'idf',
+                    'abonne',
+                    'type_abonement',
+                    'conso',
+                    'detail',
+                    'montant_total',
+                    'date_emission',
+                    'statut',
+                ],
+            ])
+            ->assertJsonFragment([
+                'montant_total' => '12900 FCFA', // 10x350 + 10x550 + 5x780
+                'statut' => 'Non payé',
+            ]);
     }
 
     /**
@@ -157,30 +157,30 @@ class FactureTest extends TestCase
         $auth = $this->getAuthToken('professionnel');
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $auth['token'],
+            'Authorization' => 'Bearer '.$auth['token'],
         ])->postJson('/api/factures/calculer', [
-            'id'    => $auth['abonne']->id,
+            'id' => $auth['abonne']->id,
             'conso' => 10,
         ]);
 
         $response->assertStatus(201)
-                 ->assertJsonStructure([
-                     'message',
-                     'data' => [
-                         'idf',
-                         'abonne',
-                         'type_abonement',
-                         'conso',
-                         'detail',
-                         'montant_total',
-                         'date_emission',
-                         'statut',
-                     ]
-                 ])
-                 ->assertJsonFragment([
-                     'montant_total' => '18000 FCFA', // 8500 + 10x950
-                     'statut'        => 'Non payé',
-                 ]);
+            ->assertJsonStructure([
+                'message',
+                'data' => [
+                    'idf',
+                    'abonne',
+                    'type_abonement',
+                    'conso',
+                    'detail',
+                    'montant_total',
+                    'date_emission',
+                    'statut',
+                ],
+            ])
+            ->assertJsonFragment([
+                'montant_total' => '18000 FCFA', // 8500 + 10x950
+                'statut' => 'Non payé',
+            ]);
     }
 
     /**
@@ -191,17 +191,17 @@ class FactureTest extends TestCase
         $auth = $this->getAuthToken();
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $auth['token'],
+            'Authorization' => 'Bearer '.$auth['token'],
         ])->postJson('/api/factures/calculer', [
-            'id'    => $auth['abonne']->id,
+            'id' => $auth['abonne']->id,
             'conso' => 'abc', // ❌ pas un entier
         ]);
 
         $response->assertStatus(422)
-                 ->assertJsonStructure([
-                     'message',
-                     'errors' => ['conso']
-                 ]);
+            ->assertJsonStructure([
+                'message',
+                'errors' => ['conso'],
+            ]);
     }
 
     /**
@@ -212,17 +212,17 @@ class FactureTest extends TestCase
         $auth = $this->getAuthToken();
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $auth['token'],
+            'Authorization' => 'Bearer '.$auth['token'],
         ])->postJson('/api/factures/calculer', [
-            'id'    => 99999, // ❌ inexistant
+            'id' => 99999, // ❌ inexistant
             'conso' => 10,
         ]);
 
         $response->assertStatus(422)
-                 ->assertJsonStructure([
-                     'message',
-                     'errors' => ['id']
-                 ]);
+            ->assertJsonStructure([
+                'message',
+                'errors' => ['id'],
+            ]);
     }
 
     /**
@@ -233,10 +233,10 @@ class FactureTest extends TestCase
         $auth = $this->getAuthToken();
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $auth['token'],
+            'Authorization' => 'Bearer '.$auth['token'],
         ])->getJson('/api/factures/99999');
 
         $response->assertStatus(404)
-                 ->assertJson(['message' => 'Facture introuvable']);
+            ->assertJson(['message' => 'Facture introuvable']);
     }
 }

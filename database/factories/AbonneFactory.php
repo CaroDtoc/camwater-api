@@ -1,13 +1,17 @@
 <?php
+
 namespace Database\Factories;
 
 use App\Models\Abonne;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 
-class AbonneFactory extends Factory {
+class AbonneFactory extends Factory
+{
     protected $model = Abonne::class;
-    public function definition(): array {
+
+    public function definition(): array
+    {
         return [
             'nom' => $this->faker->lastName(),
             'prenom' => $this->faker->firstName(),
@@ -19,4 +23,3 @@ class AbonneFactory extends Factory {
         ];
     }
 }
-

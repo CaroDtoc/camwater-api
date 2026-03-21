@@ -1,18 +1,14 @@
 <?php
 
-
 use App\Http\Controllers\AbonneController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FactureController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-
-
-
 Route::get('/user', function (Request $request) {
-  return $request->user();
- })->middleware('auth:sanctum');
+    return $request->user();
+})->middleware('auth:sanctum');
 
 // Route::get('abonnes', AbonneController::class);
 // Route::post('abonnes', AbonneController::class);
@@ -29,38 +25,30 @@ Route::get('/user', function (Request $request) {
 //     Route::delete('/{id}', [AbonneController::class, 'delete']);    // ✅ delete() existe
 // });
 
-
-//Routes non protégés
+// Routes non protégés
 Route::prefix('auth')->group(function () {
-    Route::post('login',  [AuthController::class, 'login']);
+    Route::post('login', [AuthController::class, 'login']);
 });
 
- // Routes protégées
+// Routes protégées
 Route::middleware('auth:sanctum')->group(function () {
 
     // Auth
     Route::prefix('auth')->group(function () {
         Route::post('logout', [AuthController::class, 'logout']);
-        Route::get('me',      [AuthController::class, 'me']);
+        Route::get('me', [AuthController::class, 'me']);
     });
 
     // Abonnés
     Route::apiResource('abonnes', AbonneController::class);
 
-
     // Factures
 
     Route::prefix('factures')->group(function () {
-    Route::get('/',            [FactureController::class, 'index']); //lister toutes les factures
-    Route::post('/calculer',   [FactureController::class, 'calculerFacture']); // Générer une facture
-    Route::get('/abonne/{id}', [FactureController::class, 'showByAbonne']); // facture d'un abonné
-    Route::get('/{idf}',       [FactureController::class, 'show']); // consulter une facture
+        Route::get('/', [FactureController::class, 'index']); // lister toutes les factures
+        Route::post('/calculer', [FactureController::class, 'calculerFacture']); // Générer une facture
+        Route::get('/abonne/{id}', [FactureController::class, 'showByAbonne']); // facture d'un abonné
+        Route::get('/{idf}', [FactureController::class, 'show']); // consulter une facture
     });
 
-
 });
-
-
-
-
-

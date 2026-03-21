@@ -27,31 +27,31 @@ class AbonneController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'nom'            => 'required|string|max:255',
-            'prenom'         => 'required|string|max:255',
-            'ville'          => 'required|string|max:255',
-            'quartier'       => 'required|string|max:255',
-            'num_compteur'   => 'required|string|max:255|unique:Abonne,num_compteur',
+            'nom' => 'required|string|max:255',
+            'prenom' => 'required|string|max:255',
+            'ville' => 'required|string|max:255',
+            'quartier' => 'required|string|max:255',
+            'num_compteur' => 'required|string|max:255|unique:Abonne,num_compteur',
             'type_abonement' => 'required|string|in:dommestique,professionnel',
-            'mdp'            => 'required|string|min:8', // ✅ Ajouté
+            'mdp' => 'required|string|min:8', // ✅ Ajouté
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'message' => 'Création échouée.',
-                'errors'  => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
         // ✅ Hashage du mdp avant sauvegarde
-        $data        = $validator->validated();
+        $data = $validator->validated();
         $data['mdp'] = Hash::make($data['mdp']);
 
         $abonne = Abonne::create($data);
 
         return response()->json([
             'message' => 'Abonné créé avec succès',
-            'data'    => $abonne  // mdp automatiquement caché grâce à $hidden
+            'data' => $abonne,  // mdp automatiquement caché grâce à $hidden
         ], 201);
     }
 
@@ -63,7 +63,7 @@ class AbonneController extends Controller
     {
         $abonne = Abonne::find($id);
 
-        if (!$abonne) {
+        if (! $abonne) {
             return response()->json(['message' => 'Abonné introuvable'], 404);
         }
 
@@ -79,19 +79,19 @@ class AbonneController extends Controller
         $abonne = Abonne::findOrFail($id);
 
         $validator = Validator::make($request->all(), [
-            'nom'            => 'sometimes|string|max:255',
-            'prenom'         => 'sometimes|string|max:255',
-            'ville'          => 'sometimes|string|max:255',
-            'quartier'       => 'sometimes|string|max:255',
-            'num_compteur'   => 'sometimes|string|max:255|unique:Abonne,num_compteur,' . $id,
+            'nom' => 'sometimes|string|max:255',
+            'prenom' => 'sometimes|string|max:255',
+            'ville' => 'sometimes|string|max:255',
+            'quartier' => 'sometimes|string|max:255',
+            'num_compteur' => 'sometimes|string|max:255|unique:Abonne,num_compteur,'.$id,
             'type_abonement' => 'sometimes|string|in:dommestique,professionnel',
-            'mdp'            => 'sometimes|string|min:8', // ✅ Ajouté
+            'mdp' => 'sometimes|string|min:8', // ✅ Ajouté
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'message' => 'Mise à jour échouée.',
-                'errors'  => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
@@ -105,18 +105,16 @@ class AbonneController extends Controller
 
         return response()->json([
             'message' => 'Abonné mis à jour avec succès',
-            'data'    => $abonne  // mdp automatiquement caché grâce à $hidden
+            'data' => $abonne,  // mdp automatiquement caché grâce à $hidden
         ], 200);
     }
 
-
-
-    //Supprimer un abonne
+    // Supprimer un abonne
     public function destroy($id)
     {
         $abonne = Abonne::find($id);
 
-        if (!$abonne) {
+        if (! $abonne) {
             return response()->json(['message' => 'Abonné introuvable'], 404);
         }
 

@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
+use App\Models\Abonne;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
-use App\Models\Abonne;
 
 class AbonneSeeder extends Seeder
 {
@@ -12,49 +12,49 @@ class AbonneSeeder extends Seeder
     {
         $abonnes = [
             [
-                'nom'            => 'Dupont',
-                'prenom'         => 'Jean',
-                'ville'          => 'Douala',
-                'quartier'       => 'Bonanjo',
-                'num_compteur'   => 'CPT-001',
+                'nom' => 'Dupont',
+                'prenom' => 'Jean',
+                'ville' => 'Douala',
+                'quartier' => 'Bonanjo',
+                'num_compteur' => 'CPT-001',
                 'type_abonement' => 'dommestique',
-                'mdp'            => Hash::make('password123'), 
+                'mdp' => Hash::make('password123'),
             ],
             [
-                'nom'            => 'Mbarga',
-                'prenom'         => 'Paul',
-                'ville'          => 'Yaoundé',
-                'quartier'       => 'Bastos',
-                'num_compteur'   => 'CPT-002',
+                'nom' => 'Mbarga',
+                'prenom' => 'Paul',
+                'ville' => 'Yaoundé',
+                'quartier' => 'Bastos',
+                'num_compteur' => 'CPT-002',
                 'type_abonement' => 'professionnel',
-                'mdp'            => Hash::make('password123'),
+                'mdp' => Hash::make('password123'),
             ],
             [
-                'nom'            => 'Fotso',
-                'prenom'         => 'Marie',
-                'ville'          => 'Douala',
-                'quartier'       => 'Akwa',
-                'num_compteur'   => 'CPT-003',
+                'nom' => 'Fotso',
+                'prenom' => 'Marie',
+                'ville' => 'Douala',
+                'quartier' => 'Akwa',
+                'num_compteur' => 'CPT-003',
                 'type_abonement' => 'dommestique',
-                'mdp'            => Hash::make('password123'),
+                'mdp' => Hash::make('password123'),
             ],
             [
-                'nom'            => 'Biya',
-                'prenom'         => 'Claire',
-                'ville'          => 'Bafoussam',
-                'quartier'       => 'Tamdja',
-                'num_compteur'   => 'CPT-004',
+                'nom' => 'Biya',
+                'prenom' => 'Claire',
+                'ville' => 'Bafoussam',
+                'quartier' => 'Tamdja',
+                'num_compteur' => 'CPT-004',
                 'type_abonement' => 'professionnel',
-                'mdp'            => Hash::make('password123'),
+                'mdp' => Hash::make('password123'),
             ],
             [
-                'nom'            => 'Nkomo',
-                'prenom'         => 'Pierre',
-                'ville'          => 'Douala',
-                'quartier'       => 'Deido',
-                'num_compteur'   => 'CPT-005',
+                'nom' => 'Nkomo',
+                'prenom' => 'Pierre',
+                'ville' => 'Douala',
+                'quartier' => 'Deido',
+                'num_compteur' => 'CPT-005',
                 'type_abonement' => 'dommestique',
-                'mdp'            => Hash::make('password123'),
+                'mdp' => Hash::make('password123'),
             ],
         ];
 

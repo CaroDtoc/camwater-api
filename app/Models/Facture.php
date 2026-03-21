@@ -14,17 +14,17 @@ use Illuminate\Database\Eloquent\Model;
  * @property float $montant_total
  * @property Carbon|null $dateEmission
  * @property string $statut
- *
- * @property-read \App\Models\Abonne $abonne
- *
- * @package App\Models
+ * @property-read Abonne $abonne
  */
 class Facture extends Model
 {
-    protected $table      = 'Facture';
+    protected $table = 'Facture';
+
     protected $primaryKey = 'idf';
-    public $incrementing  = true;
-    public $timestamps    = false;
+
+    public $incrementing = true;
+
+    public $timestamps = false;
 
     protected $fillable = [
         'id',

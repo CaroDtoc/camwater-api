@@ -18,9 +18,9 @@ class AuthTest extends TestCase
     public function test_login_succes()
     {
         $abonne = Abonne::factory()->create([
-            'nom'          => 'Dupont',
+            'nom' => 'Dupont',
             'num_compteur' => Str::random(5),
-            'mdp'          => Hash::make('password123'),
+            'mdp' => Hash::make('password123'),
         ]);
 
         $response = $this->postJson('/api/auth/login', [
@@ -29,22 +29,22 @@ class AuthTest extends TestCase
         ]);
 
         $response->assertStatus(200)
-                 ->assertJsonStructure([
-                     'message',
-                     'access_token',
-                     'token_type',
-                     'data' => [
-                         'id',
-                         'nom',
-                         'prenom',
-                         'num_compteur',
-                         'type_abonement',
-                     ]
-                 ])
-                 ->assertJsonFragment([
-                     'message'    => 'Connexion réussie',
-                     'token_type' => 'Bearer',
-                 ]);
+            ->assertJsonStructure([
+                'message',
+                'access_token',
+                'token_type',
+                'data' => [
+                    'id',
+                    'nom',
+                    'prenom',
+                    'num_compteur',
+                    'type_abonement',
+                ],
+            ])
+            ->assertJsonFragment([
+                'message' => 'Connexion réussie',
+                'token_type' => 'Bearer',
+            ]);
     }
 
     /**
@@ -53,9 +53,9 @@ class AuthTest extends TestCase
     public function test_login_mauvais_mdp()
     {
         $abonne = Abonne::factory()->create([
-            'nom'          => 'Dupont',
+            'nom' => 'Dupont',
             'num_compteur' => Str::random(5),
-            'mdp'          => Hash::make('password123'),
+            'mdp' => Hash::make('password123'),
         ]);
 
         $response = $this->postJson('/api/auth/login', [
@@ -64,9 +64,9 @@ class AuthTest extends TestCase
         ]);
 
         $response->assertStatus(401)
-                 ->assertJson([
-                     'message' => 'Nom ou mot de passe incorrect.'
-                 ]);
+            ->assertJson([
+                'message' => 'Nom ou mot de passe incorrect.',
+            ]);
     }
 
     /**
@@ -80,9 +80,9 @@ class AuthTest extends TestCase
         ]);
 
         $response->assertStatus(401)
-                 ->assertJson([
-                     'message' => 'Nom ou mot de passe incorrect.'
-                 ]);
+            ->assertJson([
+                'message' => 'Nom ou mot de passe incorrect.',
+            ]);
     }
 
     /**
@@ -93,10 +93,10 @@ class AuthTest extends TestCase
         $response = $this->postJson('/api/auth/login', []);
 
         $response->assertStatus(422)
-                 ->assertJsonStructure([
-                     'message',
-                     'errors' => ['nom', 'mdp']
-                 ]);
+            ->assertJsonStructure([
+                'message',
+                'errors' => ['nom', 'mdp'],
+            ]);
     }
 
     /**
@@ -106,19 +106,19 @@ class AuthTest extends TestCase
     {
         $abonne = Abonne::factory()->create([
             'num_compteur' => Str::random(5),
-            'mdp'          => Hash::make('password123'),
+            'mdp' => Hash::make('password123'),
         ]);
 
         $token = $abonne->createToken('auth_token')->plainTextToken;
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
+            'Authorization' => 'Bearer '.$token,
         ])->postJson('/api/auth/logout');
 
         $response->assertStatus(200)
-                 ->assertJson([
-                     'message' => 'Déconnexion réussie'
-                 ]);
+            ->assertJson([
+                'message' => 'Déconnexion réussie',
+            ]);
     }
 
     /**
@@ -138,25 +138,25 @@ class AuthTest extends TestCase
     {
         $abonne = Abonne::factory()->create([
             'num_compteur' => Str::random(5),
-            'mdp'          => Hash::make('password123'),
+            'mdp' => Hash::make('password123'),
         ]);
 
         $token = $abonne->createToken('auth_token')->plainTextToken;
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
+            'Authorization' => 'Bearer '.$token,
         ])->getJson('/api/auth/me');
 
         $response->assertStatus(200)
-                 ->assertJsonStructure([
-                     'data' => [
-                         'id',
-                         'nom',
-                         'prenom',
-                         'num_compteur',
-                         'type_abonement',
-                     ]
-                 ]);
+            ->assertJsonStructure([
+                'data' => [
+                    'id',
+                    'nom',
+                    'prenom',
+                    'num_compteur',
+                    'type_abonement',
+                ],
+            ]);
     }
 
     /**

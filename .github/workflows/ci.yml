@@ -33,3 +33,6 @@ jobs:
       # 5. Générer la clé de l'application
       - name: Generate app key
         run: php artisan key:generate
+      #  6. Linting - Qualité du code
+      - name: Run Linting (Laravel Pint)
+        run: ./vendor/bin/pint --test

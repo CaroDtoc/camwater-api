@@ -26,16 +26,16 @@ class AuthController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'message' => 'Données invalides.',
-                'errors'  => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
         // cette fonction permet de vériier l'existanac d'un abonné en prenant en paramètre son nom
         $abonne = Abonne::where('nom', $request->nom)->first();
 
-        if (!$abonne || !Hash::check($request->mdp, $abonne->mdp)) {
+        if (! $abonne || ! Hash::check($request->mdp, $abonne->mdp)) {
             return response()->json([
-                'message' => 'Nom ou mot de passe incorrect.'
+                'message' => 'Nom ou mot de passe incorrect.',
             ], 401);
         }
 
@@ -46,16 +46,16 @@ class AuthController extends Controller
         $token = $abonne->createToken('auth_token')->plainTextToken;
 
         return response()->json([
-            'message'      => 'Connexion réussie',
+            'message' => 'Connexion réussie',
             'access_token' => $token,
-            'token_type'   => 'Bearer',
-            'data'         => [
-                'id'             => $abonne->id,
-                'nom'            => $abonne->nom,
-                'prenom'         => $abonne->prenom,
-                'num_compteur'   => $abonne->num_compteur,
+            'token_type' => 'Bearer',
+            'data' => [
+                'id' => $abonne->id,
+                'nom' => $abonne->nom,
+                'prenom' => $abonne->prenom,
+                'num_compteur' => $abonne->num_compteur,
                 'type_abonement' => $abonne->type_abonement,
-            ]
+            ],
         ], 200);
     }
 
@@ -68,7 +68,7 @@ class AuthController extends Controller
         $request->user()->currentAccessToken()->delete();
 
         return response()->json([
-            'message' => 'Déconnexion réussie'
+            'message' => 'Déconnexion réussie',
         ], 200);
     }
 
@@ -79,7 +79,7 @@ class AuthController extends Controller
     public function me(Request $request)
     {
         return response()->json([
-            'data' => $request->user()
+            'data' => $request->user(),
         ], 200);
     }
 }
