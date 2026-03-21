@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('Abonne', function (Blueprint $table) {
+        Schema::create('abonne', function (Blueprint $table) {
             $table->id();
             $table->string('nom')->nullable();
             $table->string('prenom')->nullable();

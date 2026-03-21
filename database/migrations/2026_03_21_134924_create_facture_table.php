@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('Facture', function (Blueprint $table) {
+        Schema::create('facture', function (Blueprint $table) {
             $table->id('idf');
             $table->unsignedBigInteger('id');
             $table->integer('conso');

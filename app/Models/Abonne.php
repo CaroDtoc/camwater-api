@@ -24,7 +24,7 @@ class Abonne extends Authenticatable
     use HasApiTokens, Notifiable;
     use HasFactory;
 
-    protected $table = 'Abonne';
+    protected $table = 'abonne';
 
     protected $primaryKey = 'id';
 

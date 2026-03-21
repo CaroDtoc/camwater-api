@@ -63,16 +63,16 @@ jobs:
       - name: Run Linting (Laravel Pint)
         run: ./vendor/bin/pint --test
 
-      # 8. Migrations
+      #  Migrations
       - name: Run migrations
-        run: php artisan migrate --env=testing --force
+        run: php artisan migrate:fresh --force
         env:
           DB_CONNECTION: mysql
           DB_HOST: 127.0.0.1
           DB_PORT: 3306
           DB_DATABASE: camwater_db_testing
           DB_USERNAME: root
-          DB_PASSWORD: ""
+          DB_PASSWORD: 
 
       # 9. Tests unitaires
       - name: Run Tests
