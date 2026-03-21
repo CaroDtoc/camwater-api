@@ -11,28 +11,76 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
 
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: camwater_db_testing
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
     steps:
-      #  1. Récupérer le code
+      # 1. Récupérer le code
       - name: Checkout code
         uses: actions/checkout@v3
 
-      #  2. Installer PHP
+      # 2. Installer PHP
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
           extensions: mbstring, pdo, pdo_mysql, xml, bcmath
 
-     #  3. Installer les dépendances Composer
+      # 3. Installer les dépendances Composer
       - name: Install dependencies
         run: composer update --no-interaction --prefer-dist --optimize-autoloader --no-scripts
-      #  4. Copier le .env
+
+      # 4. Copier le .env
       - name: Copy .env
         run: cp .env.example .env
 
       # 5. Générer la clé de l'application
       - name: Generate app key
         run: php artisan key:generate
-      #  6. Linting - Qualité du code
+
+      # 6. Configurer la base de données à mettre Avant le linting
+      - name: Configure database
+        run: |
+          sed -i 's/DB_CONNECTION=sqlite/DB_CONNECTION=mysql/' .env
+          sed -i 's/# DB_HOST=127.0.0.1/DB_HOST=127.0.0.1/' .env
+          sed -i 's/# DB_PORT=3306/DB_PORT=3306/' .env
+          sed -i 's/# DB_DATABASE=laravel/DB_DATABASE=camwater_db_testing/' .env
+          sed -i 's/# DB_USERNAME=root/DB_USERNAME=root/' .env
+          sed -i 's/# DB_PASSWORD=/DB_PASSWORD=root/' .env
+
+      # 7. Linting - Qualité du code  Une seule fois
       - name: Run Linting (Laravel Pint)
         run: ./vendor/bin/pint --test
+
+      # 8. Migrations
+      - name: Run migrations
+        run: php artisan migrate --force
+        env:
+          DB_CONNECTION: mysql
+          DB_HOST: 127.0.0.1
+          DB_PORT: 3306
+          DB_DATABASE: camwater_db_testing
+          DB_USERNAME: root
+          DB_PASSWORD: root
+
+      # 9. Tests unitaires
+      - name: Run Tests
+        run: php artisan test
+        env:
+          DB_CONNECTION: mysql
+          DB_HOST: 127.0.0.1
+          DB_PORT: 3306
+          DB_DATABASE: camwater_db_testing
+          DB_USERNAME: root
+          DB_PASSWORD: root
