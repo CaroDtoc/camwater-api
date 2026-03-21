@@ -1,0 +1,36 @@
+name: CI - CamWater API
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+
+    steps:
+      #  1. Récupérer le code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      #  2. Installer PHP
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, pdo, pdo_mysql, xml, bcmath
+
+      #  3. Installer les dépendances Composer
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader
+
+      #  4. Copier le .env
+      - name: Copy .env
+        run: cp .env.example .env
+
+      # 5. Générer la clé de l'application
+      - name: Generate app key
+        run: php artisan key:generate
