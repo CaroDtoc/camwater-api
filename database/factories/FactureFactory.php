@@ -13,11 +13,11 @@ class FactureFactory extends Factory
     public function definition(): array
     {
         return [
-            'id'            => Abonne::factory(), // ✅ Crée un abonné automatiquement
-            'conso'         => $this->faker->numberBetween(1, 50),
+            'id' => Abonne::factory(), // ✅ Crée un abonné automatiquement
+            'conso' => $this->faker->numberBetween(1, 50),
             'montant_total' => $this->faker->numberBetween(350, 50000),
             'date_emission' => $this->faker->date('Y-m-d'),
-            'statut'        => $this->faker->randomElement(['Payé', 'Non payé']),
+            'statut' => $this->faker->randomElement(['Payé', 'Non payé']),
         ];
     }
 }
