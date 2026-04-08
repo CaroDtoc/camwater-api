@@ -15,7 +15,7 @@ return new class() extends Migration
             $table->float('montant_total');
             $table->date('date_emission')->nullable();
             $table->string('statut');
-            $table->foreign('id')->references('id')->on('Abonne');
+            $table->foreign('id')->references('id')->on('abonne');
         });
     }
 
