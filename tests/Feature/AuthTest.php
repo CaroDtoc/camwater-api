@@ -3,14 +3,15 @@
 namespace Tests\Feature;
 
 use App\Models\Abonne;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Tests\TestCase;
 
 class AuthTest extends TestCase
 {
-    use DatabaseTransactions;
+
+    use RefreshDatabase;
 
     /**
      * Test de connexion réussie

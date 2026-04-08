@@ -4,14 +4,15 @@ namespace Tests\Feature;
 
 use App\Models\Abonne;
 use App\Models\Facture;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Tests\TestCase;
 
 class FactureTest extends TestCase
 {
-    use DatabaseTransactions;
+
+    use RefreshDatabase;
 
     /**
      * Crée un abonné authentifié et retourne le token

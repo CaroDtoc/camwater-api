@@ -3,14 +3,15 @@
 namespace Tests\Feature;
 
 use App\Models\Abonne;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Tests\TestCase;
 
 class AbonneTest extends TestCase
 {
-    use DatabaseTransactions; // ✅ Réinitialise la BD après chaque test
+
+    use RefreshDatabase;
 
     /**
      * Crée un abonné authentifié et retourne le token

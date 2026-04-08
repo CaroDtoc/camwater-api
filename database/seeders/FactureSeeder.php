@@ -6,8 +6,10 @@ use App\Models\Abonne;
 use App\Models\Facture;
 use Illuminate\Database\Seeder;
 
+
 class FactureSeeder extends Seeder
 {
+
     public function run(): void
     {
         //  Récupère les ids réels des abonnés

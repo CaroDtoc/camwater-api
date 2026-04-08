@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Hash;
 
 class AbonneSeeder extends Seeder
 {
+
+
     public function run(): void
     {
         $abonnes = [
