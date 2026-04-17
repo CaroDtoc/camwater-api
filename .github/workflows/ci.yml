@@ -1,16 +1,16 @@
-name: CI - CamWater API (Clean & Stable)
+name: CI - CamWater API
 
 on:
 push:
-branches: [ main, develop ]
+branches: [main, develop]
 pull_request:
-branches: [ main, develop ]
+branches: [main, develop]
 
 jobs:
 ci:
 runs-on: ubuntu-latest
 
-
+```
 services:
   mysql:
     image: mysql:8.0
@@ -26,42 +26,34 @@ services:
       --health-retries=5
 
 steps:
-  # 1. Checkout
   - name: Checkout code
     uses: actions/checkout@v4
 
-  # 2. Setup PHP
   - name: Setup PHP
     uses: shivammathur/setup-php@v2
     with:
-      php-version: 8.2
+      php-version: '8.2'
       extensions: mbstring, pdo, pdo_mysql, xml, bcmath
 
-  # 3. Cache Composer (accélère fortement)
-  - name: Cache Composer dependencies
+  - name: Cache Composer
     uses: actions/cache@v3
     with:
       path: vendor
       key: composer-${{ hashFiles('**/composer.lock') }}
 
-  # 4. Install dependencies
   - name: Install dependencies
     run: composer install --no-interaction --prefer-dist --optimize-autoloader
 
-  # 5. Fix code style automatiquement (IMPORTANT)
-  - name: Fix code style (Laravel Pint)
+  - name: Fix code style (Pint)
     run: ./vendor/bin/pint
 
-  # 6. Copier .env
   - name: Copy .env
     run: cp .env.example .env
 
-  # 7. Générer clé
-  - name: Generate app key
+  - name: Generate key
     run: php artisan key:generate
 
-  # 8. Config DB propre (sans sed fragile)
-  - name: Configure environment
+  - name: Configure DB
     run: |
       echo "DB_CONNECTION=mysql" >> .env
       echo "DB_HOST=127.0.0.1" >> .env
@@ -70,14 +62,12 @@ steps:
       echo "DB_USERNAME=root" >> .env
       echo "DB_PASSWORD=root" >> .env
 
-  # 9. Attendre MySQL (important sinon crash aléatoire)
   - name: Wait for MySQL
     run: sleep 10
 
-  # 10. Migrations
   - name: Run migrations
     run: php artisan migrate:fresh --force
 
-  # 11. Tests
-  - name: Run Tests
+  - name: Run tests
     run: php artisan test
+```
