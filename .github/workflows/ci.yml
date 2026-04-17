@@ -1,86 +1,83 @@
-name: CI - CamWater API
+name: CI - CamWater API (Clean & Stable)
 
 on:
-  push:
-    branches: [ main, develop ]
-  pull_request:
-    branches: [ main, develop ]
+push:
+branches: [ main, develop ]
+pull_request:
+branches: [ main, develop ]
 
 jobs:
-  build:
-    name: Build
-    runs-on: ubuntu-latest
+ci:
+runs-on: ubuntu-latest
 
-    services:
-      mysql:
-        image: mysql:8.0
-        env:
-          MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: camwater_db_testing
-        ports:
-          - 3306:3306
-        options: >-
-          --health-cmd="mysqladmin ping"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=3
 
-    steps:
-      # 1. Récupérer le code
-      - name: Checkout code
-        uses: actions/checkout@v3
+services:
+  mysql:
+    image: mysql:8.0
+    env:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: camwater_db_testing
+    ports:
+      - 3306:3306
+    options: >-
+      --health-cmd="mysqladmin ping"
+      --health-interval=10s
+      --health-timeout=5s
+      --health-retries=5
 
-      # 2. Installer PHP
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.2'
-          extensions: mbstring, pdo, pdo_mysql, xml, bcmath
+steps:
+  # 1. Checkout
+  - name: Checkout code
+    uses: actions/checkout@v4
 
-      # 3. Installer les dépendances Composer
-      - name: Install dependencies
-        run: composer update --no-interaction --prefer-dist --optimize-autoloader --no-scripts
+  # 2. Setup PHP
+  - name: Setup PHP
+    uses: shivammathur/setup-php@v2
+    with:
+      php-version: 8.2
+      extensions: mbstring, pdo, pdo_mysql, xml, bcmath
 
-      # 7. Linting - Qualité du code  Une seule fois (placé plus tôt pour fail rapide)
-      - name: Run Linting (Laravel Pint)
-        run: ./vendor/bin/pint --test
+  # 3. Cache Composer (accélère fortement)
+  - name: Cache Composer dependencies
+    uses: actions/cache@v3
+    with:
+      path: vendor
+      key: composer-${{ hashFiles('**/composer.lock') }}
 
-      # 4. Copier le .env
-      - name: Copy .env
-        run: cp .env.example .env
+  # 4. Install dependencies
+  - name: Install dependencies
+    run: composer install --no-interaction --prefer-dist --optimize-autoloader
 
-      # 5. Générer la clé de l'application
-      - name: Generate app key
-        run: php artisan key:generate
+  # 5. Fix code style automatiquement (IMPORTANT)
+  - name: Fix code style (Laravel Pint)
+    run: ./vendor/bin/pint
 
-      # 6. Configurer la base de données à mettre Avant le linting
-      - name: Configure database
-        run: |
-          sed -i 's/DB_CONNECTION=sqlite/DB_CONNECTION=mysql/' .env
-          sed -i 's/# DB_HOST=127.0.0.1/DB_HOST=127.0.0.1/' .env
-          sed -i 's/# DB_PORT=3306/DB_PORT=3306/' .env
-          sed -i 's/# DB_DATABASE=laravel/DB_DATABASE=camwater_db_testing/' .env
-          sed -i 's/# DB_USERNAME=root/DB_USERNAME=root/' .env
-          sed -i 's/# DB_PASSWORD=/DB_PASSWORD=root/' .env
+  # 6. Copier .env
+  - name: Copy .env
+    run: cp .env.example .env
 
-      #  Migrations
-      - name: Run migrations
-        run: php artisan migrate:fresh --force
-        env:
-          DB_CONNECTION: mysql
-          DB_HOST: 127.0.0.1
-          DB_PORT: 3306
-          DB_DATABASE: camwater_db_testing
-          DB_USERNAME: root
-          DB_PASSWORD: root
+  # 7. Générer clé
+  - name: Generate app key
+    run: php artisan key:generate
 
-      # 9. Tests unitaires
-      - name: Run Tests
-        run: php artisan test
-        env:
-          DB_CONNECTION: mysql
-          DB_HOST: 127.0.0.1
-          DB_PORT: 3306
-          DB_DATABASE: camwater_db_testing
-          DB_USERNAME: root
-          DB_PASSWORD: root
+  # 8. Config DB propre (sans sed fragile)
+  - name: Configure environment
+    run: |
+      echo "DB_CONNECTION=mysql" >> .env
+      echo "DB_HOST=127.0.0.1" >> .env
+      echo "DB_PORT=3306" >> .env
+      echo "DB_DATABASE=camwater_db_testing" >> .env
+      echo "DB_USERNAME=root" >> .env
+      echo "DB_PASSWORD=root" >> .env
+
+  # 9. Attendre MySQL (important sinon crash aléatoire)
+  - name: Wait for MySQL
+    run: sleep 10
+
+  # 10. Migrations
+  - name: Run migrations
+    run: php artisan migrate:fresh --force
+
+  # 11. Tests
+  - name: Run Tests
+    run: php artisan test
