@@ -1,73 +1,82 @@
-name: CI - CamWater API
+name: CI - CamWater API (Clean & Stable)
 
 on:
-push:
-branches: [main, develop]
-pull_request:
-branches: [main, develop]
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
 
 jobs:
-ci:
-runs-on: ubuntu-latest
+  ci:
+    runs-on: ubuntu-latest
 
-```
-services:
-  mysql:
-    image: mysql:8.0
-    env:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: camwater_db_testing
-    ports:
-      - 3306:3306
-    options: >-
-      --health-cmd="mysqladmin ping"
-      --health-interval=10s
-      --health-timeout=5s
-      --health-retries=5
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: camwater_db_testing
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
 
-steps:
-  - name: Checkout code
-    uses: actions/checkout@v4
+    steps:
+      # 1. Checkout
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-  - name: Setup PHP
-    uses: shivammathur/setup-php@v2
-    with:
-      php-version: '8.2'
-      extensions: mbstring, pdo, pdo_mysql, xml, bcmath
+      # 2. Setup PHP
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, pdo, pdo_mysql, xml, bcmath
 
-  - name: Cache Composer
-    uses: actions/cache@v3
-    with:
-      path: vendor
-      key: composer-${{ hashFiles('**/composer.lock') }}
+      # 3. Cache Composer
+      - name: Cache Composer dependencies
+        uses: actions/cache@v3
+        with:
+          path: vendor
+          key: composer-${{ hashFiles('**/composer.lock') }}
 
-  - name: Install dependencies
-    run: composer install --no-interaction --prefer-dist --optimize-autoloader
+      # 4. Install dependencies
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader
 
-  - name: Fix code style (Pint)
-    run: ./vendor/bin/pint
+      # 5. Copier .env (avant key:generate)
+      - name: Copy .env
+        run: cp .env.example .env
 
-  - name: Copy .env
-    run: cp .env.example .env
+      # 6. Générer clé
+      - name: Generate app key
+        run: php artisan key:generate
 
-  - name: Generate key
-    run: php artisan key:generate
+      # 7. Configurer la DB
+      - name: Configure environment
+        run: |
+          echo "DB_CONNECTION=mysql" >> .env
+          echo "DB_HOST=127.0.0.1" >> .env
+          echo "DB_PORT=3306" >> .env
+          echo "DB_DATABASE=camwater_db_testing" >> .env
+          echo "DB_USERNAME=root" >> .env
+          echo "DB_PASSWORD=root" >> .env
 
-  - name: Configure DB
-    run: |
-      echo "DB_CONNECTION=mysql" >> .env
-      echo "DB_HOST=127.0.0.1" >> .env
-      echo "DB_PORT=3306" >> .env
-      echo "DB_DATABASE=camwater_db_testing" >> .env
-      echo "DB_USERNAME=root" >> .env
-      echo "DB_PASSWORD=root" >> .env
+      # 8. Fix code style
+      - name: Fix code style (Laravel Pint)
+        run: ./vendor/bin/pint
 
-  - name: Wait for MySQL
-    run: sleep 10
+      # 9. Attendre MySQL
+      - name: Wait for MySQL
+        run: sleep 10
 
-  - name: Run migrations
-    run: php artisan migrate:fresh --force
+      # 10. Migrations
+      - name: Run migrations
+        run: php artisan migrate:fresh --force
 
-  - name: Run tests
-    run: php artisan test
-```
+      # 11. Tests
+      - name: Run Tests
+        run: php artisan test
