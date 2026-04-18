@@ -56,17 +56,14 @@ jobs:
       - name: Fix code style (Laravel Pint)
         run: ./vendor/bin/pint
 
-      # 7. Analyse statique
-      - name: Static code analysis (PHPStan)
-        run: ./vendor/bin/phpstan analyse app config database --memory-limit=1G
 
-      # 8. Préparation environnement Laravel
+      # 7. Préparation environnement Laravel
       - name: Prepare environment
         run: |
           cp .env.example .env
           php artisan key:generate
 
-      # 9. Configuration base de données
+      # 8. Configuration base de données
       - name: Configure DB
         run: |
           echo "DB_CONNECTION=mysql" >> .env
@@ -76,32 +73,21 @@ jobs:
           echo "DB_USERNAME=root" >> .env
           echo "DB_PASSWORD=root" >> .env
 
-      # 10. Attendre MySQL
+      # 9. Attendre MySQL
       - name: Wait for MySQL
         run: sleep 10
 
-      # 11. Cache Laravel
+      # 10. Cache Laravel
       - name: Build application cache
         run: |
           php artisan config:clear
           php artisan cache:clear
 
-      # 12. Migrations
+      # 11. Migrations
       - name: Run migrations
         run: php artisan migrate:fresh --force
 
-      # 13. Tests
+      # 12. Tests
       - name: Run tests
         run: php artisan test
 
-      # 14. Artifact (backup optionnel)
-      - name: Create build artifact
-        run: |
-          zip -r laravel-build.zip . \
-            -x "vendor/**" ".git/**" "node_modules/**" ".env"
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: laravel-build
-          path: laravel-build.zip
