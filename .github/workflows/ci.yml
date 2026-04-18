@@ -77,11 +77,9 @@ jobs:
       - name: Wait for MySQL
         run: sleep 10
 
-      # 10. Cache Laravel
+      # 11. Cache Laravel 
       - name: Build application cache
-        run: |
-          php artisan config:clear
-          php artisan cache:clear
+        run: php artisan config:clear
 
       # 11. Migrations
       - name: Run migrations
